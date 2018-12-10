@@ -7,16 +7,18 @@
  */
 #include "includes.h"
 #include "BswDrv_CAN.h"
+#include "BswSrv_CAN.h"
+#include "BswSrv_System.h"
+#include "App_CAN.h"
 
 
 
-uint8_t receive_flag = 0;
 
 can_trasnmit_message_struct transmit_message;
 can_receive_message_struct receive_message;
-CAN_BSW_DRV_BUFF_STR CanReceiveData[CAN_NODE_NUMB] = {0,};
+//CAN_BSW_DRV_BUFF_STR CanReceiveData[CAN_NODE_NUMB] = {0,};
 
-void CanBusGpioConfig(void)
+void BswDrv_CanBusGpioConfig(void)
 {
     rcu_periph_clock_enable(RCU_CAN0);
     rcu_periph_clock_enable(RCU_GPIOD);
@@ -40,12 +42,12 @@ void CanBusGpioConfig(void)
 ** Returned value:	  	None
 ** Author:              quqian
 *****************************************************************************/
-void CanBusInit(void)
+void BswDrv_CanBusInit(void)
 {
     can_parameter_struct can_parameter;
     can_filter_parameter_struct can_filter;
 
-	CanBusGpioConfig();
+	BswDrv_CanBusGpioConfig();
 	
     can_deinit(CAN0);
     
@@ -91,39 +93,202 @@ void CanBusInit(void)
 
 	/* enable CAN receive FIFO0 not empty interrupt */
     can_interrupt_enable(CAN0, CAN_INTEN_RFNEIE0);
+
+	GlobalInfo.CanMessageQueue = xQueueCreate(MESSAGE_QUEUE_NUM, sizeof(CAN_DRV_MESSAGE_QUEUE_STR)); 
+	BswSrv_CanFifoInit();
+#if USER_ANOTHER_THREAD
+	AppCan_FifoInit();
+#endif
 }
 
+void BswDrv_CanWriteHandle(uint16_t Serial)
+{
+	uint16_t FrameSerial = Serial;
+    uint32_t i = 0;
+    
+	if (CanBswSrvFifo[0].CanRxBuff.writeIndex >= CanBswSrvFifo[0].CanRxBuff.lastReadIndex) 
+	{
+		if ((((uint16_t)FrameSerial * 8) < CanBswSrvFifo[0].CanRxBuff.writeIndex))
+		{
+			if(((uint16_t)FrameSerial * 8) >= CanBswSrvFifo[0].CanRxBuff.lastReadIndex)
+			{
+				memcpy(CanBuffNode[0].UnionCanBuff.DrvBuff[FrameSerial].CanDrvRxBuff, receive_message.rx_data, 8);
+			}
+	        else if(((uint16_t)FrameSerial * 8) < (CanBswSrvFifo[0].CanRxBuff.lastReadIndex - 8))	//防止读取太慢, 前面的数据被后面覆盖
+			{
+				for(i = (CanBswSrvFifo[0].CanRxBuff.writeIndex / 8); i < CAN_BUFF_LEN; i++)
+				{
+					memset(CanBuffNode[0].UnionCanBuff.DrvBuff[FrameSerial].CanDrvRxBuff, 0, 8);
+				}
+				for(i = 0; i < FrameSerial; i++)
+				{
+					memset(CanBuffNode[0].UnionCanBuff.DrvBuff[FrameSerial].CanDrvRxBuff, 0, 8);
+				}
+				memcpy(CanBuffNode[0].UnionCanBuff.DrvBuff[FrameSerial].CanDrvRxBuff, receive_message.rx_data, 8);
+			}
+	    }
+		else if ((((uint16_t)FrameSerial * 8) == CanBswSrvFifo[0].CanRxBuff.writeIndex) && 
+			(((uint16_t)FrameSerial * 8) >= CanBswSrvFifo[0].CanRxBuff.lastReadIndex))
+		{
+	        memcpy(CanBuffNode[0].UnionCanBuff.DrvBuff[FrameSerial].CanDrvRxBuff, receive_message.rx_data, 8);
+			if(((uint32_t)CAN_BUFF_LEN - 1) > FrameSerial)
+			{
+				CanBswSrvFifo[0].CanRxBuff.writeIndex = ((uint16_t)(FrameSerial + 1) * 8);
+			}
+			else if(((uint32_t)CAN_BUFF_LEN - 1) == FrameSerial)
+			{
+				CanBswSrvFifo[0].CanRxBuff.writeIndex = 0;
+			}
+			else
+			{
+				//帧序号超出范围, 错误
+			}
+	    }
+		else if ((((uint16_t)FrameSerial * 8) > CanBswSrvFifo[0].CanRxBuff.writeIndex) && 
+			(((uint16_t)FrameSerial * 8) >= CanBswSrvFifo[0].CanRxBuff.lastReadIndex))
+		{
+			if(FrameSerial == ((uint32_t)CAN_BUFF_LEN - 1))
+			{
+				for(i = (CanBswSrvFifo[0].CanRxBuff.writeIndex / 8); i < FrameSerial; i++)
+				{
+					memset(CanBuffNode[0].UnionCanBuff.DrvBuff[FrameSerial].CanDrvRxBuff, 0, 8);
+				}
+				memcpy(CanBuffNode[0].UnionCanBuff.DrvBuff[FrameSerial].CanDrvRxBuff, receive_message.rx_data, 8);
+				CanBswSrvFifo[0].CanRxBuff.writeIndex = 0;
+			}
+			else if(FrameSerial < ((uint32_t)CAN_BUFF_LEN - 1))
+			{
+				for(i = (CanBswSrvFifo[0].CanRxBuff.writeIndex / 8); i < FrameSerial; i++)
+				{
+					memset(CanBuffNode[0].UnionCanBuff.DrvBuff[FrameSerial].CanDrvRxBuff, 0, 8);
+				}
+				memcpy(CanBuffNode[0].UnionCanBuff.DrvBuff[FrameSerial].CanDrvRxBuff, receive_message.rx_data, 8);
+				CanBswSrvFifo[0].CanRxBuff.writeIndex = ((uint16_t)(FrameSerial + 1) * 8);
+			}
+			else
+			{
+				//帧序号超出范围, 错误
+			}
+	    }
+    }
+	else if (CanBswSrvFifo[0].CanRxBuff.writeIndex < (CanBswSrvFifo[0].CanRxBuff.lastReadIndex - 8)) //writeIndex 是8的倍数
+	{
+        if(((uint16_t)FrameSerial * 8) < (CanBswSrvFifo[0].CanRxBuff.lastReadIndex - 8))
+        {
+        	if ((((uint16_t)FrameSerial * 8) < CanBswSrvFifo[0].CanRxBuff.writeIndex))
+			{
+				memcpy(CanBuffNode[0].UnionCanBuff.DrvBuff[FrameSerial].CanDrvRxBuff, receive_message.rx_data, 8);
+			}
+			else if ((((uint16_t)FrameSerial * 8) == CanBswSrvFifo[0].CanRxBuff.writeIndex))
+			{
+				memcpy(CanBuffNode[0].UnionCanBuff.DrvBuff[FrameSerial].CanDrvRxBuff, receive_message.rx_data, 8);
+				CanBswSrvFifo[0].CanRxBuff.writeIndex = ((uint16_t)(FrameSerial + 1) * 8);
+			}
+			else if ((((uint16_t)FrameSerial * 8) > CanBswSrvFifo[0].CanRxBuff.writeIndex))
+			{
+				for(i = (CanBswSrvFifo[0].CanRxBuff.writeIndex / 8); i < FrameSerial; i++)
+				{
+					memset(CanBuffNode[0].UnionCanBuff.DrvBuff[FrameSerial].CanDrvRxBuff, 0, 8);
+				}
+				memcpy(CanBuffNode[0].UnionCanBuff.DrvBuff[FrameSerial].CanDrvRxBuff, receive_message.rx_data, 8);
+				CanBswSrvFifo[0].CanRxBuff.writeIndex = ((uint16_t)(FrameSerial + 1) * 8);
+			}
+		}
+		else
+		{
+			//读取太慢, 写空间不足
+		}
+    }
+	else
+	{
+		//读取太慢, 写空间不足
+	}
+}
 
 void USBD_LP_CAN0_RX0_IRQHandler(void)
 {
-	static uint8_t Len = 0;
+	uint8_t FrameSerial = 0;
 	
     /* check the receive message */
     can_message_receive(CAN0, CAN_FIFO0, &receive_message);
-//    CanReceiveData[0].ReceiveLen = receive_message.rx_dlen;//can_receive_message_length_get(CAN0, CAN_FIFO0);
-    #if 0
-    if((CAN_TX_SFID == receive_message.rx_sfid) && (CAN_FF_STANDARD == receive_message.rx_ff))
+
+	switch(receive_message.rx_ft)
 	{
-		Len++;
-		memcpy(CanReceiveDataLenStruct[0].ReceiveData, receive_message.rx_data, 8);
-		CanReceiveDataLenStruct[0].rx_fi = receive_message.rx_fi;
-		CanReceiveDataLenStruct[0].rx_efid = receive_message.rx_efid;
-        receive_flag = 1;
+		case CAN_FT_DATA:	//如果是数据帧
+		{
+			if((CAN_SA_ADDR == receive_message.ExtendFrame.rx_efid_struct.SA))		//源地址
+			{
+				switch(receive_message.rx_ff)
+				{
+					case CAN_FF_EXTENDED:	//如果是扩展帧
+					{
+						switch(receive_message.ExtendFrame.rx_efid_struct.PS)	//目的地址, 是发给我的?
+						{
+							case CAN_PS_ADDR0:	//接收第0个节点数据
+							{
+								if(0 == receive_message.ExtendFrame.rx_efid_struct.PF_Bit7)		//如果是单帧
+								{
+									//uxQueueMessagesWaiting(GlobalInfo.CanMessageQueue)		//使用了的队列
+									//uxQueueSpacesAvailable(GlobalInfo.CanMessageQueue)		//还剩余的队列
+									GlobalInfo.CanSendMessage.Cmd = receive_message.ExtendFrame.rx_efid_struct.PF_Bit0ToBit7;
+									GlobalInfo.CanSendMessage.Len = receive_message.rx_dlen;
+									memcpy(GlobalInfo.CanSendMessage.RxBuff, receive_message.rx_data, 8);
+									if((GlobalInfo.CanMessageQueue != NULL))
+									{
+										if(0 < uxQueueSpacesAvailable(GlobalInfo.CanMessageQueue))	//剩余队列大于0个
+										{
+											if(pdTRUE == xQueueSend(GlobalInfo.CanMessageQueue, (void*)&GlobalInfo.CanSendMessage, (TickType_t)1))	//向队列中发送数据
+											{
+												memset((void*)&GlobalInfo.CanSendMessage.Cmd, 0, sizeof(GlobalInfo.CanSendMessage));	//清除数据接收缓冲区
+												return;
+											}
+										}
+									}
+									if(GlobalInfo.AppCan_HandleCallBack != NULL)
+									{
+										GlobalInfo.AppCan_HandleCallBack(receive_message.rx_data, receive_message.rx_dlen, GlobalInfo.CanSendMessage.Cmd);
+									}
+									else
+									{
+										AppCan_CallBack(receive_message.rx_data, receive_message.rx_dlen, GlobalInfo.CanSendMessage.Cmd);
+									}
+								}
+								else if(1 == receive_message.ExtendFrame.rx_efid_struct.PF_Bit7)	//如果是多帧包
+								{
+									FrameSerial = receive_message.ExtendFrame.rx_efid_struct.PF_Bit0ToBit7;
+									#if CAN_BUFF_512_BYTE
+									if(64 <= FrameSerial)
+									{
+										FrameSerial = FrameSerial - 64;
+									}
+
+									BswDrv_CanWriteHandle(FrameSerial);
+									#else
+									BswDrv_CanWriteHandle(FrameSerial);
+									#endif
+								}
+							}
+							break;
+							default:
+							break;
+						}
+					}
+					break;
+					
+					case CAN_FF_STANDARD:	//如果是标准帧
+					break;
+					default:
+					break;
+				};
+			}
+		}
+		break;
 		
-	//	CanReceiveData[]
-    }
-	#else
-	if((CAN_TX_EFID == receive_message.ExtendFrame.rx_efid) && (CAN_FF_EXTENDED == receive_message.rx_ff))
-	{
-		Len++;
-	//	memcpy(CanReceiveData[0].ReceiveData, receive_message.rx_data, 8);
-	//	CanReceiveData[0].rx_fi = receive_message.rx_fi;
-	//	CanReceiveData[0].rx_efid = receive_message.ExtendFrame.rx_efid;
-        receive_flag = 1;
-		
-	//	CanReceiveData[]
-    }
-	#endif
+		case CAN_FT_REMOTE:	//如果是遥控帧
+		break;
+		default:
+		break;
+	}
 }
 
 

@@ -2,6 +2,7 @@
 #define __SYSTEM_H__
 
 #include "includes.h"
+#include "BswDrv_CAN.h"
 
 #define ICCID_LEN                       20
 #define CHARGER_SN_LEN			        8
@@ -67,6 +68,11 @@ typedef struct
 	uint32_t blueLastOnlineTime;			//蓝牙在线时间
 	uint8_t upgradeFlag;					//1-系统正在升级  0-为升级
 	void (*readCard_Callback)(uint8_t,uint8_t *);
+	void (*AppCan_HandleCallBack)(uint8_t *data, uint16_t len, uint8_t cmd);
+	QueueHandle_t CanMessageQueue;			//信息队列句柄
+	CAN_DRV_MESSAGE_QUEUE_STR CanSendMessage;
+	CAN_DRV_MESSAGE_QUEUE_STR CanReceiveMessage;
+	CAN_READ_WRITE_INDEX_STR pReadWriteIndex;
 }GLOBAL_INFO_T;
 
 

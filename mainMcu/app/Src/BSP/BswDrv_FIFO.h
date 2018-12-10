@@ -93,6 +93,8 @@ typedef struct
     volatile uint16_t usedLen;                       //!< The number of elements in FIFO
     volatile uint16_t readIndex;                     //!< FIFO Data Read Index Pointer
     volatile uint16_t writeIndex;                    //!< FIFO Data Write Index Pointer
+    volatile uint16_t lastReadIndex;				//读取完上一完整帧后的索引
+	volatile uint16_t lastWriteIndex;
 }FIFO_S_t;
 
 //******************************************************************************************

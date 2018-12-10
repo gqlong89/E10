@@ -355,6 +355,7 @@ int FIFO_S_Flush(FIFO_S_t* pFIFO)
     pFIFO->usedLen = 0;
     pFIFO->readIndex = 0;
     pFIFO->writeIndex = 0;
+	pFIFO->lastReadIndex = 0;
 	
     return (0);
 }

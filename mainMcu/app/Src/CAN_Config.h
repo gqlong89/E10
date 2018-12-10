@@ -13,9 +13,20 @@
 
 
 
-#define CAN_BUFF_512_BYTE              	(1)			//1: buff有512个字节 	 0: buff有1024个字节
-#define CAN_NODE_NUMB                	(9)			//和自己通信的节点个数
+#define CAN_BUFF_512_BYTE              		(1)			//1: buff有512个字节 	 0: buff有1024个字节
+#define CAN_NODE_NUMB                		(9)			//和自己通信的节点个数
+#define CAN_WAIT_TIMES             			(100)
+#define CAN_WRITE_DATA_LEN             		(256 + 32)
+#define CAN_AA_55_LEN             			(4)
+#define CAN_R_N_LEN             			(2)
+#define USER_ANOTHER_THREAD             	(0)
 
+
+#if CAN_BUFF_512_BYTE
+	#define CAN_BUFF_LEN              		(64)			
+#else
+	#define CAN_BUFF_LEN              		(128)
+#endif
 
 
 

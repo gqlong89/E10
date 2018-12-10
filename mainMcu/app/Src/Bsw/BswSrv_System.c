@@ -88,7 +88,8 @@ void BswSrv_LoadSystemInfo(void)
     //全局变量初始化
     memset(&GlobalInfo,0,sizeof(GlobalInfo));
     GlobalInfo.readCard_Callback = NULL;
-    
+    GlobalInfo.AppCan_HandleCallBack = NULL;
+		
     if(BswSrv_Tool_isArraryEmpty(SystemInfo.idCode,8) != CL_OK)
     {
         GlobalInfo.isRegister = 1;  //已经注册

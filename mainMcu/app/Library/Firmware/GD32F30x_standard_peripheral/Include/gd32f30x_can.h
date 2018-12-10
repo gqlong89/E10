@@ -366,12 +366,15 @@ typedef struct
 	{
 		struct
 		{
-			uint32_t SA:8;
-			uint32_t PS:8;
-			uint32_t PF:8;
-			uint32_t DP:1;
-			uint32_t R:1;
-		    uint32_t P:3;
+			uint32_t SA:8;		//SA为源地址：发送此报文的源地址
+			uint32_t PS:8;		//PS为目标地址：接收此报文的地址
+			uint32_t PF_Bit0ToBit7:7;		//0: PF的最高位（bit7）为0，PF的bit0~bit6表示该报文的消息的命令代码
+											//1: PF的最高位（bit7）为1，PF的bit0~bit6表示这种帧格式的CAN帧全局帧序号
+			uint32_t PF_Bit7:1;		//0: PF的最高位（bit7）为0，PF的bit0~bit6表示该报文的消息的命令代码
+									//1: PF的最高位（bit7）为1，PF的bit0~bit6表示这种帧格式的CAN帧全局帧序号
+			uint32_t DP:1;		//DP为数据页：用来选择参数组描述的辅助页，本标准设为0
+			uint32_t R:1;		//R位保留位：备今后开发使用，本标准设为0
+		    uint32_t P:3;		//P为优先权：从最高0设置到最低7
 		    uint32_t ThreeBitZero:3;
 		} tx_efid_struct;  
 		uint32_t tx_efid;                                                   /*!< extended format frame identifier */
@@ -386,17 +389,19 @@ typedef struct
 typedef struct
 {
     uint32_t rx_sfid;                                                   /*!< standard format frame identifier */
-    
 	union
 	{
 		struct
 		{
-			uint32_t SA:8;
-			uint32_t PS:8;
-			uint32_t PF:8;
-			uint32_t DP:1;
-			uint32_t R:1;
-		    uint32_t P:3;
+			uint32_t SA:8;		//SA为源地址：发送此报文的源地址
+			uint32_t PS:8;		//PS为目标地址：接收此报文的地址
+			uint32_t PF_Bit0ToBit7:7;		//0: PF的最高位（bit7）为0，PF的bit0~bit6表示该报文的消息的命令代码
+											//1: PF的最高位（bit7）为1，PF的bit0~bit6表示这种帧格式的CAN帧全局帧序号
+			uint32_t PF_Bit7:1;		//0: PF的最高位（bit7）为0，PF的bit0~bit6表示该报文的消息的命令代码
+									//1: PF的最高位（bit7）为1，PF的bit0~bit6表示这种帧格式的CAN帧全局帧序号
+			uint32_t DP:1;		//DP为数据页：用来选择参数组描述的辅助页，本标准设为0
+			uint32_t R:1;		//R位保留位：备今后开发使用，本标准设为0
+		    uint32_t P:3;		//P为优先权：从最高0设置到最低7
 		    uint32_t ThreeBitZero:3;
 		} rx_efid_struct;  
 		uint32_t rx_efid;                                                   /*!< extended format frame identifier */
