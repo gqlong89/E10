@@ -366,51 +366,51 @@ typedef struct
 	{
 		struct
 		{
-			uint32_t SA:8;		//SA为源地址：发送此报文的源地址
-			uint32_t PS:8;		//PS为目标地址：接收此报文的地址
-			uint32_t PF_Bit0ToBit7:7;		//0: PF的最高位（bit7）为0，PF的bit0~bit6表示该报文的消息的命令代码
-											//1: PF的最高位（bit7）为1，PF的bit0~bit6表示这种帧格式的CAN帧全局帧序号
-			uint32_t PF_Bit7:1;		//0: PF的最高位（bit7）为0，PF的bit0~bit6表示该报文的消息的命令代码
-									//1: PF的最高位（bit7）为1，PF的bit0~bit6表示这种帧格式的CAN帧全局帧序号
-			uint32_t DP:1;		//DP为数据页：用来选择参数组描述的辅助页，本标准设为0
-			uint32_t R:1;		//R位保留位：备今后开发使用，本标准设为0
-		    uint32_t P:3;		//P为优先权：从最高0设置到最低7
+			uint32_t SA:8;									//SA为源地址：发送此报文的源地址
+			uint32_t PS:8;									//PS为目标地址：接收此报文的地址
+			uint32_t PF_Bit0ToBit7:7;						//0: PF的最高位（bit7）为0，PF的bit0~bit6表示该报文的消息的命令代码
+															//1: PF的最高位（bit7）为1，PF的bit0~bit6表示这种帧格式的CAN帧全局帧序号
+			uint32_t PF_Bit7:1;								//0: PF的最高位（bit7）为0，PF的bit0~bit6表示该报文的消息的命令代码
+															//1: PF的最高位（bit7）为1，PF的bit0~bit6表示这种帧格式的CAN帧全局帧序号
+			uint32_t DP:1;									//DP为数据页：用来选择参数组描述的辅助页，本标准设为0
+			uint32_t R:1;									//R位保留位：备今后开发使用，本标准设为0
+		    uint32_t P:3;									//P为优先权：从最高0设置到最低7
 		    uint32_t ThreeBitZero:3;
-		} tx_efid_struct;  
-		uint32_t tx_efid;                                                   /*!< extended format frame identifier */
+		} TxEfid;  
+		uint32_t tx_efid;                                  	/*!< extended format frame identifier */
 	}ExtendFrame;
-    uint8_t tx_ff;  //标准帧还是扩展帧                                                     /*!< format of frame, standard or extended format */
-    uint8_t tx_ft; //数据帧还是遥控帧                                                     /*!< type of frame, data or remote */
-    uint8_t tx_dlen;                                                    /*!< data length */
-    uint8_t tx_data[8];                                                 /*!< transmit data */
+    uint8_t tx_ff;  										//标准帧还是扩展帧 
+    uint8_t tx_ft; 											//数据帧还是遥控帧 
+    uint8_t tx_dlen;                                        /*!< data length */
+    uint8_t tx_data[8];                                     /*!< transmit data */
 }can_trasnmit_message_struct;
 
 /* CAN receive message struct */
 typedef struct
 {
-    uint32_t rx_sfid;                                                   /*!< standard format frame identifier */
+    uint32_t rx_sfid;                                       /*!< standard format frame identifier */
 	union
 	{
 		struct
 		{
-			uint32_t SA:8;		//SA为源地址：发送此报文的源地址
-			uint32_t PS:8;		//PS为目标地址：接收此报文的地址
-			uint32_t PF_Bit0ToBit7:7;		//0: PF的最高位（bit7）为0，PF的bit0~bit6表示该报文的消息的命令代码
-											//1: PF的最高位（bit7）为1，PF的bit0~bit6表示这种帧格式的CAN帧全局帧序号
-			uint32_t PF_Bit7:1;		//0: PF的最高位（bit7）为0，PF的bit0~bit6表示该报文的消息的命令代码
-									//1: PF的最高位（bit7）为1，PF的bit0~bit6表示这种帧格式的CAN帧全局帧序号
-			uint32_t DP:1;		//DP为数据页：用来选择参数组描述的辅助页，本标准设为0
-			uint32_t R:1;		//R位保留位：备今后开发使用，本标准设为0
-		    uint32_t P:3;		//P为优先权：从最高0设置到最低7
+			uint32_t SA:8;									//SA为源地址：发送此报文的源地址
+			uint32_t PS:8;									//PS为目标地址：接收此报文的地址
+			uint32_t PF_Bit0ToBit7:7;						//0: PF的最高位（bit7）为0，PF的bit0~bit6表示该报文的消息的命令代码
+															//1: PF的最高位（bit7）为1，PF的bit0~bit6表示这种帧格式的CAN帧全局帧序号
+			uint32_t PF_Bit7:1;								//0: PF的最高位（bit7）为0，PF的bit0~bit6表示该报文的消息的命令代码
+															//1: PF的最高位（bit7）为1，PF的bit0~bit6表示这种帧格式的CAN帧全局帧序号
+			uint32_t DP:1;									//DP为数据页：用来选择参数组描述的辅助页，本标准设为0
+			uint32_t R:1;									//R位保留位：备今后开发使用，本标准设为0
+		    uint32_t P:3;									//P为优先权：从最高0设置到最低7
 		    uint32_t ThreeBitZero:3;
-		} rx_efid_struct;  
-		uint32_t rx_efid;                                                   /*!< extended format frame identifier */
+		} RxEfid;  
+		uint32_t rx_efid;                                  	/*!< extended format frame identifier */
 	}ExtendFrame;
-    uint8_t rx_ff;                                                      /*!< format of frame, standard or extended format */
-    uint8_t rx_ft;                                                      /*!< type of frame, data or remote */
-    uint8_t rx_dlen;                                                    /*!< data length */
-    uint8_t rx_data[8];                                                 /*!< receive data */
-    uint8_t rx_fi;                                                      /*!< filtering index */
+    uint8_t rx_ff;                                        	/*!< format of frame, standard or extended format */
+    uint8_t rx_ft;                                        	/*!< type of frame, data or remote */
+    uint8_t rx_dlen;                                       	/*!< data length */
+    uint8_t rx_data[8];                                    	/*!< receive data */
+    uint8_t rx_fi;                                        	/*!< filtering index */
 } can_receive_message_struct;
 
 /* CAN filter parameters struct */

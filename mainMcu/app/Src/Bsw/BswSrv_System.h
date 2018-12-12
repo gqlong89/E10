@@ -68,11 +68,17 @@ typedef struct
 	uint32_t blueLastOnlineTime;			//蓝牙在线时间
 	uint8_t upgradeFlag;					//1-系统正在升级  0-为升级
 	void (*readCard_Callback)(uint8_t,uint8_t *);
-	void (*AppCan_HandleCallBack)(uint8_t *data, uint16_t len, uint8_t cmd);
+	void (*AppCan_HandleCallBack)(uint8_t *data, uint16_t len, uint8_t cmd, uint8_t SourceAddr);
 	QueueHandle_t CanMessageQueue;			//信息队列句柄
 	CAN_DRV_MESSAGE_QUEUE_STR CanSendMessage;
 	CAN_DRV_MESSAGE_QUEUE_STR CanReceiveMessage;
 	CAN_READ_WRITE_INDEX_STR pReadWriteIndex;
+	uint8_t SerialNum;
+	uint8_t DestAddr;	//Can 通信的目的地址, 开机时GPIO读取
+	struct
+	{
+		uint32_t PF_Bit0ToBit7:7;
+	} BitFieldFlag;
 }GLOBAL_INFO_T;
 
 

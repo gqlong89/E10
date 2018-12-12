@@ -25,6 +25,7 @@ typedef struct
 typedef struct
 {
 	uint8_t Cmd;
+	uint8_t SA;		//发送源的地址
 	uint8_t Len;
 	uint8_t RxBuff[8];
 }CAN_DRV_MESSAGE_QUEUE_STR;

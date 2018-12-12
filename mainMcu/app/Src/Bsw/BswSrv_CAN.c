@@ -74,6 +74,11 @@ int BswSrv_CanRecvDataToCache(uint8_t NodeIndex)
 					pktBuff[0] = data;
 					pktLen = 1;
 					sum = data;
+					if((CAN_WAIT_TIMES < WaitFlag[NodeIndex]))
+					{
+						CanBswSrvFifo[NodeIndex].CanRxBuff.lastReadIndex = CanBswSrvFifo[NodeIndex].CanRxBuff.readIndex;
+						WaitFlag[NodeIndex] = WaitFlag[NodeIndex] - 5;
+					}
 				}
 				else
 				{
@@ -117,7 +122,7 @@ int BswSrv_CanRecvDataToCache(uint8_t NodeIndex)
 				if (2 == ++len)
 				{
 					len = (pktBuff[pktLen-1]<<8) | pktBuff[pktLen-2];
-					if ((256 - CAN_AA_55_LEN) < len)	//长度域：包含从 序列号 到 校验和域 的所有字节数 
+					if ((256 - CAN_AA_55_SRC_DEST_LEN) < len)	//长度域：包含从 序列号 到 校验和域 的所有字节数 
 					{
 						CL_LOG("len=%d,接收数据包的长度错误 \n", len);
 						step = BSW_SRV_CAN_FIVE;
@@ -176,7 +181,7 @@ int BswSrv_CanRecvDataToCache(uint8_t NodeIndex)
 				if (CAN_R_N_LEN == ++len)
                 {
                 	pCanPkt = (void*)pktBuff;
-                    if((256 - CAN_AA_55_LEN) < pCanPkt->head.len)
+                    if((256 - CAN_AA_55_SRC_DEST_LEN) < pCanPkt->head.len)
                     {
                         CL_LOG("pCanPkt数据长度接收错误！\n");
 						step = BSW_SRV_CAN_FIVE;
@@ -188,7 +193,7 @@ int BswSrv_CanRecvDataToCache(uint8_t NodeIndex)
 						}
                     }
 					#if USER_ANOTHER_THREAD
-                    for (len = 0; len < (pCanPkt->head.len + CAN_AA_55_LEN); ) 
+                    for (len = 0; len < (pCanPkt->head.len + CAN_AA_55_SRC_DEST_LEN); ) 
                     {
                         if (CL_OK == FIFO_S_Put(&CanBswSrvAppFifo[NodeIndex].CanRxBuff, (&pCanPkt->head.five)[len]))
                         {
@@ -201,7 +206,14 @@ int BswSrv_CanRecvDataToCache(uint8_t NodeIndex)
                         }
                     }
 					#else
-					AppCan_CallBack(pCanPkt->data, pCanPkt->head.len + CAN_AA_55_LEN, pCanPkt->head.cmd);
+					if(GlobalInfo.AppCan_HandleCallBack != NULL)
+					{
+						GlobalInfo.AppCan_HandleCallBack(pCanPkt->data, pCanPkt->head.len + CAN_AA_55_SRC_DEST_LEN, pCanPkt->head.cmd, pCanPkt->head.src_SA);
+					}
+					else
+					{
+						AppCan_CallBack(pCanPkt->data, pCanPkt->head.len + CAN_AA_55_SRC_DEST_LEN, pCanPkt->head.cmd, pCanPkt->head.src_SA);
+					}
 					#endif
 					step = BSW_SRV_CAN_FIVE;
 					WaitFlag[NodeIndex] = 0;

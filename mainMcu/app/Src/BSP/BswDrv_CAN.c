@@ -216,21 +216,22 @@ void USBD_LP_CAN0_RX0_IRQHandler(void)
 	{
 		case CAN_FT_DATA:	//如果是数据帧
 		{
-			if((CAN_SA_ADDR == receive_message.ExtendFrame.rx_efid_struct.SA))		//源地址
+			if((CAN_SA_ADDR == receive_message.ExtendFrame.RxEfid.SA))		//源地址
 			{
 				switch(receive_message.rx_ff)
 				{
 					case CAN_FF_EXTENDED:	//如果是扩展帧
 					{
-						switch(receive_message.ExtendFrame.rx_efid_struct.PS)	//目的地址, 是发给我的?
+						switch(receive_message.ExtendFrame.RxEfid.PS)	//目的地址, 是发给我的?
 						{
 							case CAN_PS_ADDR0:	//接收第0个节点数据
 							{
-								if(0 == receive_message.ExtendFrame.rx_efid_struct.PF_Bit7)		//如果是单帧
+								if(0 == receive_message.ExtendFrame.RxEfid.PF_Bit7)		//如果是单帧
 								{
 									//uxQueueMessagesWaiting(GlobalInfo.CanMessageQueue)		//使用了的队列
 									//uxQueueSpacesAvailable(GlobalInfo.CanMessageQueue)		//还剩余的队列
-									GlobalInfo.CanSendMessage.Cmd = receive_message.ExtendFrame.rx_efid_struct.PF_Bit0ToBit7;
+									GlobalInfo.CanSendMessage.Cmd = receive_message.ExtendFrame.RxEfid.PF_Bit0ToBit7;
+									GlobalInfo.CanSendMessage.SA = receive_message.ExtendFrame.RxEfid.SA;
 									GlobalInfo.CanSendMessage.Len = receive_message.rx_dlen;
 									memcpy(GlobalInfo.CanSendMessage.RxBuff, receive_message.rx_data, 8);
 									if((GlobalInfo.CanMessageQueue != NULL))
@@ -246,16 +247,16 @@ void USBD_LP_CAN0_RX0_IRQHandler(void)
 									}
 									if(GlobalInfo.AppCan_HandleCallBack != NULL)
 									{
-										GlobalInfo.AppCan_HandleCallBack(receive_message.rx_data, receive_message.rx_dlen, GlobalInfo.CanSendMessage.Cmd);
+										GlobalInfo.AppCan_HandleCallBack(receive_message.rx_data, receive_message.rx_dlen, GlobalInfo.CanSendMessage.Cmd, receive_message.ExtendFrame.RxEfid.SA);
 									}
 									else
 									{
-										AppCan_CallBack(receive_message.rx_data, receive_message.rx_dlen, GlobalInfo.CanSendMessage.Cmd);
+										AppCan_CallBack(receive_message.rx_data, receive_message.rx_dlen, GlobalInfo.CanSendMessage.Cmd, receive_message.ExtendFrame.RxEfid.SA);
 									}
 								}
-								else if(1 == receive_message.ExtendFrame.rx_efid_struct.PF_Bit7)	//如果是多帧包
+								else if(1 == receive_message.ExtendFrame.RxEfid.PF_Bit7)	//如果是多帧包
 								{
-									FrameSerial = receive_message.ExtendFrame.rx_efid_struct.PF_Bit0ToBit7;
+									FrameSerial = receive_message.ExtendFrame.RxEfid.PF_Bit0ToBit7;
 									#if CAN_BUFF_512_BYTE
 									if(64 <= FrameSerial)
 									{

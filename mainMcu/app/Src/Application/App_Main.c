@@ -77,8 +77,7 @@ void App_MainTask(void)
 	
 	while(1)
 	{
-        CL_LOG("11111111111111111111111!!! \r\n");
-		osDelay(2000);
+		osDelay(200);
 
 		//µÕµÁ—πºÏ≤‚..
 		if(READ_LVD_IN() == 0)

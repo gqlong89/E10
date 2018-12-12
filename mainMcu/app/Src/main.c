@@ -33,13 +33,8 @@ void start_task(void *pvParameters)
 //	xTaskCreate((TaskFunction_t)NFCardTask,	    "NFCardTask",	256, NULL, 4, NULL);   
 //	xTaskCreate((TaskFunction_t)WifiBlueTask,	"BlueTask", 	512, NULL, 5, NULL); 
 	xTaskCreate((TaskFunction_t)ComTask,		"ComTask", 	    384, NULL, 6, NULL); 
-
-    //	vTaskDelete(NULL);
-    while(1)
-	{
-        CL_LOG("222222222222222222222222!!! \r\n");
-		osDelay(2000);
-    }
+	
+	vTaskDelete(NULL);
 }
 
 
