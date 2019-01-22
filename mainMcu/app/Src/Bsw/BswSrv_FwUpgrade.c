@@ -10,7 +10,6 @@
 #include "BswSrv_FlashUsr.h"
 #include "App_CardBoardProto.h"
 #include "BswDrv_sc8042b.h"
-#include "BswSrv_NetTask.h"
 
 TaskHandle_t CardUpgradeHandle_t  = NULL;
 
@@ -27,7 +26,7 @@ void OTA_Start(UPGRADE_TYPE type)
     if(type == UPGRADE_FTP || type == UPGRADE_HTTP)
     {
         //如果是ftp或者http下载先关闭网络
-        BswSrv_CloseNetWork();
+      //  BswSrv_CloseNetWork();
     }
 }
 

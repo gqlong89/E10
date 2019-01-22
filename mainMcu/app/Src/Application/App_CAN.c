@@ -11,9 +11,6 @@
 #include "BswDrv_GPIO.h"
 #include "BswSrv_System.h"
 #include "BswSrv_FlashUsr.h"
-#include "BswSrv_NetTask.h"
-#include "BswSrv_Air720.h"
-#include "BswSrv_WG215.h"
 #include "BswSrv_FwUpgrade.h"
 
 

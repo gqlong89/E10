@@ -41,6 +41,7 @@ typedef struct
 
 
 
+extern void BswDrv_CanBusInit(void);
 
 
 

@@ -56,9 +56,9 @@ void BswDrv_CanBusInit(void)
     can_parameter.auto_wake_up = DISABLE;
     can_parameter.auto_retrans = DISABLE;
     can_parameter.rec_fifo_overwrite = DISABLE;
-    can_parameter.trans_fifo_order = ENABLE;	//当TFO为1，所有等待发送的邮箱按照先来先发送（FIFO）的顺序进行。
-												//当TFO为0，具有最小标识符（Identifier）的邮箱最先发送。如果所有的标识符（Identifier）相等，具有最小邮箱编号的邮箱最先发送。
-    can_parameter.working_mode = CAN_LOOPBACK_MODE;//CAN_NORMAL_MODE;
+    can_parameter.trans_fifo_order = ENABLE;		//当TFO为1，所有等待发送的邮箱按照先来先发送（FIFO）的顺序进行。
+													//当TFO为0，具有最小标识符（Identifier）的邮箱最先发送。如果所有的标识符（Identifier）相等，具有最小邮箱编号的邮箱最先发送。
+    can_parameter.working_mode = CAN_LOOPBACK_MODE;	//CAN_NORMAL_MODE;
 
 	/* 
 		CAN 波特率 = RCC_APB1Periph_CAN0 / prescaler / (resync_jump_width + time_segment_1 + time_segment_2);
@@ -78,17 +78,15 @@ void BswDrv_CanBusInit(void)
 
     /* initialize filter */
     /* CAN0 filter number */
-    can_filter.filter_number = 0;
-
-    /* initialize filter */    
-	can_filter.filter_fifo_number = CAN_FIFO0;
-    can_filter.filter_mode = CAN_FILTERMODE_MASK;
-    can_filter.filter_bits = CAN_FILTERBITS_32BIT;
+    can_filter.filter_number = 0;										//使用0号过滤器组
+	can_filter.filter_fifo_number = CAN_FIFO0;							//使用FIFO0
+    can_filter.filter_mode = CAN_FILTERMODE_MASK;						//屏蔽位标识符模式
+    can_filter.filter_bits = CAN_FILTERBITS_32BIT;						//1个32bit的过滤器
     can_filter.filter_list_high = 0x0000;
     can_filter.filter_list_low = 0x0000;
     can_filter.filter_mask_high = 0x0000;
     can_filter.filter_mask_low = 0x0000;  
-    can_filter.filter_enable = ENABLE;
+    can_filter.filter_enable = ENABLE;									//使能过滤器
     can_filter_init(&can_filter);
 
 	/* enable CAN receive FIFO0 not empty interrupt */

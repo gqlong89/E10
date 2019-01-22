@@ -21,7 +21,6 @@ uint32_t USARTX[5] = {USART0, USART1, USART2, UART3, UART4};
 UART_INFO_STR UartPortHandleInfo[5] = {0,};
 
 extern FIFO_S_t gGsmRecvFifo;
-extern FIFO_S_t wifiBlueFifo;
 
 osSemaphoreId ComRxSem = NULL;
 
@@ -189,16 +188,16 @@ void IRQHandler(int index)
 			//用于接收服务器响应数据
 			if(GlobalInfo.is_socket_0_ok == 1 && GlobalInfo.netType == NETTYPE_GPRS)
 			{
-				FIFO_S_Put(&gGsmRecvFifo, data);
+			//	FIFO_S_Put(&gGsmRecvFifo, data);
 			}
 		}
 		else if(index == WIFI_UART_INDEX)//wifi模块
 		{
 			//用于接收AT指令
-			FIFO_S_Put(&pUart->rxBuffCtrl, data);
+		//	FIFO_S_Put(&pUart->rxBuffCtrl, data);
 
 			//用于处理wifi蓝牙数据
-			FIFO_S_Put(&wifiBlueFifo, data);
+		//	FIFO_S_Put(&wifiBlueFifo, data);
 		}
 		else
 		{
