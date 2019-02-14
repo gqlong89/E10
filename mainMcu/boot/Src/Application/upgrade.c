@@ -4,7 +4,7 @@
 
 
 uint8_t FlashBuffer[FLASH_PAGE_SIZE] = {0};
-	
+
 SYS_UPDATE_INFO_T updateInfo;
 
 
@@ -13,15 +13,16 @@ int UpdateFromAppBkp(uint32_t startAddr,uint32_t fsize, uint16_t checksum)
 {
 	uint16_t ck = 0;
 	uint16_t page = fsize/FLASH_PAGE_SIZE + 1;
+	uint32_t i = 0;
 	
 	startAddr += AppUpBkpAddr;	//备份区域U8主板升级地址
 	
 	printf("startAddr=%X fsize=%d checksum=%X \r\n",startAddr,fsize,checksum);
 	
 	//检测备份区域的数据是否正确
-	for(uint32_t i = 0;i<fsize;i++)
+	for(i = 0; i < fsize; i++)
 	{
-		ck += REG8(startAddr+i);
+		ck += REG8(startAddr + i);
 	}
 	
 	if(ck != checksum)
@@ -32,16 +33,16 @@ int UpdateFromAppBkp(uint32_t startAddr,uint32_t fsize, uint16_t checksum)
 	
 	printf("正在拷贝数据到APP区域.\r\n");
 
-	for(uint16_t i = 0; i < page; i++)
-	{	
+	for(i = 0; i < page; i++)
+	{
 		//擦除app区域
 		BswDrv_SysFlashErase(AppFlashAddr + i * FLASH_PAGE_SIZE);
 		
 		//从备份区读取数据
-		BswDrv_SysFlashRead(startAddr + i * FLASH_PAGE_SIZE,FlashBuffer,FLASH_PAGE_SIZE);
+		BswDrv_SysFlashRead(startAddr + i * FLASH_PAGE_SIZE, FlashBuffer, FLASH_PAGE_SIZE);
 		
 		//写数据到app区域
-		BswDrv_SysFlashWrite(AppFlashAddr + i * FLASH_PAGE_SIZE,FlashBuffer,FLASH_PAGE_SIZE);
+		BswDrv_SysFlashWrite(AppFlashAddr + i * FLASH_PAGE_SIZE, FlashBuffer, FLASH_PAGE_SIZE);
 		
 	}
 	
@@ -49,7 +50,7 @@ int UpdateFromAppBkp(uint32_t startAddr,uint32_t fsize, uint16_t checksum)
 	//检测APP区域的数据
 	for(uint32_t i = 0;i<fsize;i++)
 	{
-		ck += REG8(AppFlashAddr+i);
+		ck += REG8(AppFlashAddr + i);
 	}
 	
 	if(ck != checksum)
@@ -68,3 +69,5 @@ int UpdateFromAppBkp(uint32_t startAddr,uint32_t fsize, uint16_t checksum)
 	
 	return CL_OK;
 }
+
+

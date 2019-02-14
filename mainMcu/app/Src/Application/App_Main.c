@@ -73,7 +73,5 @@ void App_MainTask(void)
 
 		CL_LOG("hello world!!! \r\n");
 
-		BswSrv_Key_Loop();
-
 	}
 }

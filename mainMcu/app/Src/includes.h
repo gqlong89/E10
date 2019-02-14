@@ -11,7 +11,8 @@
 #include "gd32f30x.h"
 #include "cmsis_os.h"
 #include "main.h"
-
+#include "BswDrv_Rtc.h"
+#include "BswDrv_Watchdog.h"
 
 
 #define FW_VERSION                      1
@@ -33,10 +34,10 @@
 #endif
 
 #define DEVICE_TYPE						14	//设备类型 -- U8
-#define STATION_MACHINE_TYPE            "U8"
+#define STATION_MACHINE_TYPE            "E10"
+#define CHARGER_NAME                    "E10"
 
-
-#define FLASH_SIZE                      0x40000     //设备flash大小256K
+#define FLASH_SIZE                      0x80000     //设备flash大小512K
 #define FLASH_PAGE_SIZE					2048
 
 
@@ -48,12 +49,22 @@
 
 #define RF_DEV_MAX						20 //烟感设备最大绑定数量
 
-#define TX_FAIL_MAX_CNT	                3
 
 #define osGetTimes                      osKernelSysTick
 #define GetRtcCount 	                GetTimeStamp /*(xTaskGetTickCount()*portTICK_PERIOD_MS/1000)*/
-#define UNUSED(X) (void)X
+#define UNUSED(X) 						(void)X
+#define FeedWatchDog					BswDrv_FeedWatchDog
+#define GetPktSum                       BswSrv_Tool_CheckSum
+#define OS_DELAY_MS                     vTaskDelay
+#define UsartGetOneData                 BswDrv_UsartGetOneData
 
+
+#define ORDER_SECTION_LEN               10
+#define GUN_NUM_MAX				        1
+#define OUT_NET_PKT_LEN                 (1024+32)
+#define EVEN_DISCRI_LEN                 32
+
+#define CHARGER_TYPE                    15  //15:X10F   1:X9  2:X10
 
 extern char* GetCurrentTime(void);
 #define CL_LOG(fmt,args...) do {    \

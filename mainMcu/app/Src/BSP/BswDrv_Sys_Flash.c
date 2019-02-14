@@ -2,7 +2,6 @@
 #include "includes.h"
 
 
-static int FlashWriteWord(uint32_t address,uint8_t *pBuffer,uint16_t writeNum);
 
 static SemaphoreHandle_t FlashMutex = NULL;
 
@@ -32,17 +31,17 @@ int FlashWriteWord(uint32_t address,uint8_t *pBuffer,uint16_t writeNum)
     uint32_t data = 0;
     uint32_t readAddr = address;
 	
-	for(i = 0;i < writeNum;i++)
+	for(i = 0; i < writeNum; i++)
     {
-        memcpy(&data,pBuffer + i*4,4);
+        memcpy(&data, pBuffer + i*4, 4);
         fmc_word_program(readAddr, data);
         readAddr += 4;
         fmc_flag_clear(FMC_FLAG_BANK0_END);
         fmc_flag_clear(FMC_FLAG_BANK0_WPERR);
         fmc_flag_clear(FMC_FLAG_BANK0_PGERR); 
-    }
+	}
 	
-     return CL_OK;
+	return CL_OK;
 }
 
 /**********************************************************************************************************
@@ -73,18 +72,19 @@ int BswDrv_SysFlashErase(uint32_t address)
 
 	if(address < FLASH_BASE || ((address+FLASH_PAGE_SIZE) >= (FLASH_BASE+FLASH_SIZE)))  //非法地址
 	{
+		CL_LOG("flash 擦除地址[%#x]错误, 错误!!!", address);
 		return CL_FAIL;
 	}
 
 	if((xTaskGetSchedulerState() != taskSCHEDULER_NOT_STARTED) && (FlashMutex != NULL))//系统已经运行
 	{
-		xSemaphoreTake(FlashMutex,1000);
+		xSemaphoreTake(FlashMutex, 1000);
 	}
     fmc_unlock();
 
 	offaddr = address - FLASH_BASE;		        //实际偏移地址.
 	secpos = offaddr/FLASH_PAGE_SIZE;			//扇区地址  
-	//
+	
 	// CL_LOG("secpos=%d sectorNum=%d \r\n",secpos,sectorNum);
 
 	fmc_page_erase(FLASH_BASE + secpos*FLASH_PAGE_SIZE);//擦除这个扇区
@@ -107,62 +107,20 @@ int BswDrv_SysFlashErase(uint32_t address)
 	return CL_OK;
 }
 
-/**
- * 
- */ 
-// int BswDrv_SysFlashErase(uint32_t address,uint16_t sectorNum)
-// {	
-// 	uint32_t offaddr;   //去掉0X08000000后的地址
-// 	uint32_t secpos;	//扇区偏移号
-
-// 	if(address < FLASH_BASE || ((address+sectorNum*FLASH_PAGE_SIZE) >= (FLASH_BASE+FLASH_SIZE)))  //非法地址
-// 	{
-// 		return CL_FAIL;
-// 	}
-
-// 	if((xTaskGetSchedulerState() != taskSCHEDULER_NOT_STARTED) && (FlashMutex != NULL))//系统已经运行
-// 	{
-// 		xSemaphoreTake(FlashMutex,1000);
-// 	}
-//     fmc_unlock();
-
-// 	offaddr = address - FLASH_BASE;		        //实际偏移地址.
-// 	secpos = offaddr/FLASH_PAGE_SIZE;			//扇区地址  
-// 	//
-// 	CL_LOG("secpos=%d sectorNum=%d \r\n",secpos,sectorNum);
-
-// 	for(uint16_t i = 0; i<sectorNum; i++)
-// 	{
-// 		secpos += i;
-// 		fmc_page_erase(FLASH_BASE + secpos*FLASH_PAGE_SIZE);//擦除这个扇区
-// 	}
-
-// 	fmc_flag_clear(FMC_FLAG_BANK0_END);                 //清除所有标志位
-// 	fmc_flag_clear(FMC_FLAG_BANK0_WPERR);
-// 	fmc_flag_clear(FMC_FLAG_BANK0_PGERR);
-
-// 	fmc_lock();
-//     if((xTaskGetSchedulerState() != taskSCHEDULER_NOT_STARTED) && (FlashMutex != NULL))//系统已经运行
-// 	{
-//         xSemaphoreGive(FlashMutex);	
-// 	}
-
-// 	return CL_OK;
-// }
-
-
 
 int BswDrv_SysFlashWrite(uint32_t address,uint8_t *writeBuffer,uint16_t writeLen)
 {
 	uint16_t writeNum;
 
-	if(address < FLASH_BASE || (address >= (FLASH_BASE+FLASH_SIZE)))  //非法地址
+	if((address < FLASH_BASE) || (address >= (FLASH_BASE + FLASH_SIZE)))  //非法地址
 	{
+		CL_LOG("flash 写数据地址[%#x]错误, 错误!!!", address);
 		return CL_FAIL;
 	}
 
 	if(writeLen == 0)
 	{
+		CL_LOG("flash 写数据长度为0, 错误!!!");
 		return CL_FAIL;
 	}
 
@@ -172,16 +130,16 @@ int BswDrv_SysFlashWrite(uint32_t address,uint8_t *writeBuffer,uint16_t writeLen
 	}
     fmc_unlock();
 
-	if(writeLen%4 == 0)
+	if(writeLen % 4 == 0)
 	{
-		writeNum = writeLen/4;
+		writeNum = writeLen / 4;
 	}
 	else
 	{
-		writeNum = writeLen/4 + 1;
+		writeNum = writeLen / 4 + 1;
 	}
 
-	FlashWriteWord(address,writeBuffer,writeNum);
+	FlashWriteWord(address, writeBuffer, writeNum);
 
 	fmc_lock();
     if((xTaskGetSchedulerState() != taskSCHEDULER_NOT_STARTED) && (FlashMutex != NULL))//系统已经运行

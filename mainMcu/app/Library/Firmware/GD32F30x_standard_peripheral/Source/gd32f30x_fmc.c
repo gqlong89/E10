@@ -296,11 +296,15 @@ fmc_state_enum fmc_bank1_erase(void)
 fmc_state_enum fmc_word_program(uint32_t address, uint32_t data)
 {
     fmc_state_enum fmc_state = FMC_READY;
-    if(FMC_BANK0_SIZE < FMC_SIZE){
-        if(FMC_BANK0_END_ADDRESS > address){
+	
+    if(FMC_BANK0_SIZE < FMC_SIZE)
+	{
+        if(FMC_BANK0_END_ADDRESS > address)
+		{
             fmc_state = fmc_bank0_ready_wait(FMC_TIMEOUT_COUNT); 
   
-            if(FMC_READY == fmc_state){
+            if(FMC_READY == fmc_state)
+			{
                 /* set the PG bit to start program */
                 FMC_CTL0 |= FMC_CTL0_PG;
                 REG32(address) = data;
@@ -309,10 +313,13 @@ fmc_state_enum fmc_word_program(uint32_t address, uint32_t data)
                 /* reset the PG bit */
                 FMC_CTL0 &= ~FMC_CTL0_PG;
             }
-        }else{
+        }
+		else
+		{
             fmc_state = fmc_bank1_ready_wait(FMC_TIMEOUT_COUNT); 
   
-            if(FMC_READY == fmc_state){
+            if(FMC_READY == fmc_state)
+			{
                 /* set the PG bit to start program */
                 FMC_CTL1 |= FMC_CTL1_PG;
                 REG32(address) = data;
@@ -322,10 +329,13 @@ fmc_state_enum fmc_word_program(uint32_t address, uint32_t data)
                 FMC_CTL1 &= ~FMC_CTL1_PG;
             }
         }
-    }else{
+    }
+	else
+	{
         fmc_state = fmc_bank0_ready_wait(FMC_TIMEOUT_COUNT);
   
-        if(FMC_READY == fmc_state){
+        if(FMC_READY == fmc_state)
+		{
             /* set the PG bit to start program */
             FMC_CTL0 |= FMC_CTL0_PG;
             REG32(address) = data;
@@ -333,7 +343,7 @@ fmc_state_enum fmc_word_program(uint32_t address, uint32_t data)
             fmc_state = fmc_bank0_ready_wait(FMC_TIMEOUT_COUNT);
             /* reset the PG bit */
             FMC_CTL0 &= ~FMC_CTL0_PG;
-        } 
+        }
     }
     /* return the FMC state */
     return fmc_state;

@@ -48,14 +48,16 @@ void BspInit(void)
 {
 	/*设置系统中断优先级分组4	*/
 	nvic_priority_group_set(NVIC_PRIGROUP_PRE4_SUB0);
-	
+
+	/*看门狗初始化*/
+	BswDrv_WatchDogInit();
 	/*GPIO初始化*/
 	BswDrv_GPIO_Init(); 
 	/*串口初始化*/
 	BswDrv_UsartInit();
 	/*打印重启标志*/
 	BswSrv_SystemResetRecord();
-	/*RCT初始化*/
+	/*RTC初始化*/
 	BswDrv_RtcInit();
 	/* SPI初始化 */
 	BswDrv_SPI_Init();
@@ -92,7 +94,10 @@ int main(void)
 
 	vTaskStartScheduler();          //开启任务调度
 
-	for(;;);
+	while(1)
+    {
+        vTaskDelay(1000);
+    }
 }
 
 

@@ -19,6 +19,7 @@
 
 SYSTEM_INFO_T	SystemInfo = {0,};
 GLOBAL_INFO_T	GlobalInfo = {0,};
+SYS_UPDATE_INFO_T updateInfo = {0};
 
 
 #define MAGIC_NUM_BASE                  0x123456AE
@@ -29,7 +30,8 @@ GLOBAL_INFO_T	GlobalInfo = {0,};
 
 void EXTI0_IRQHandler(void)
 {
-	if (RESET != exti_interrupt_flag_get(EXTI_0)) {
+	if (RESET != exti_interrupt_flag_get(EXTI_0)) 
+	{
         exti_interrupt_flag_clear(EXTI_0);
 
 		if(READ_LVD_IN() == 0)
@@ -67,24 +69,7 @@ void BswSrv_LoadSystemInfo(void)
     PrintfData("注册码", SystemInfo.idCode, sizeof(SystemInfo.idCode));
     CL_LOG("host=%s port=%d \r\n",NET_SERVER_IP,NET_SERVER_PORT);
     CL_LOG("\n 文件编译时间, 月日年 %s 时分秒 %s \n", __DATE__, __TIME__);
-    
-    #if 0
-    //测试--配置wifi信息
-    strcpy(SystemInfo.WifiName,WIFI_NAME);
-    strcpy(SystemInfo.WifiPasswd,WIFI_PASSWORD);
-
-    //测试--添加烟雾报警设备
-    // 0x3D8585
-    // 0x3EAAB5
-    SystemInfo.RfDev.bandSize = 2;
-    SystemInfo.RfDev.Unit[0].num = 1;
-    SystemInfo.RfDev.Unit[0].address = 0x3D858;
-    
-    SystemInfo.RfDev.Unit[1].num = 2;
-    SystemInfo.RfDev.Unit[1].address = 0x3EAAB;
-
-    #endif 
-	
+    	
     //全局变量初始化
     memset(&GlobalInfo,0,sizeof(GlobalInfo));
     GlobalInfo.readCard_Callback = NULL;
@@ -100,12 +85,6 @@ void BswSrv_LoadSystemInfo(void)
 
     CL_LOG("wifi username=%s \r\n",SystemInfo.WifiName);
     CL_LOG("wifi passwd=%s \r\n",SystemInfo.WifiPasswd);
-
-    CL_LOG("RfDev bandSize = %d \r\n",SystemInfo.RfDev.bandSize);
-    for(uint8_t i = 0;i<SystemInfo.RfDev.bandSize;i++)
-    {
-        CL_LOG("RfDev Num=%d  address=%X \r\n",SystemInfo.RfDev.Unit[i].num,SystemInfo.RfDev.Unit[i].address);
-    }
 }
 
 
@@ -286,3 +265,4 @@ char *BswSrv_Tool_BCDToString(char *dest, unsigned char *BCD, int bytes)
     dest[length] = '\0';
     return dest;
 }
+

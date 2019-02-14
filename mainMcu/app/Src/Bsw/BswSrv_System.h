@@ -14,17 +14,12 @@ enum{
 	NETTYPE_WIFI,
 };
 
-
-typedef struct{
-
-	uint16_t bandSize;					//绑定个数
-	struct
-	{
-		uint8_t num;			//编号
-		uint32_t address;		//已经绑定的设备地址
-	}Unit[RF_DEV_MAX];
-
-}RFDev_t;
+typedef struct {
+    uint32_t size;
+    uint16_t checkSum;
+    uint8_t  ver;
+    uint8_t  sum;
+}TERMINAL_FW_INFO_STR;
 
 //sizeof(SYSTEM_INFO_T) = 256
 typedef struct
@@ -35,8 +30,14 @@ typedef struct
 	char WifiName[32];							// ssid
 	char WifiPasswd[32];						// passwd
 	uint8_t reserved0[16];
-	RFDev_t RfDev;								// 433设备 最大20个设备 占用102个字节
-	uint8_t resevred1[54];						// 预留
+    uint8_t blue_connectstate;					//蓝牙链接状态
+    volatile uint8_t is_socket_0_ok;
+    TERMINAL_FW_INFO_STR localFwInfo;           //本地固件信息
+    uint8_t  tcp_tx_error_times;
+	uint8_t  iccid[22];                         // ASCII
+	uint8_t  netType;                           //网络接入类型 1:本地2g 2:485拉远 3蓝牙2.4G: 4:尝试本地 5:尝试拉远
+	uint32_t mqtt_sn;
+	uint8_t  isRecvStartUpAck;                  //0:未登录后台 1:登录后台
 }SYSTEM_INFO_T;
 
 
@@ -82,6 +83,17 @@ typedef struct
 }GLOBAL_INFO_T;
 
 
+
+#pragma pack(1)
+typedef struct{
+	uint16_t updateFlag;
+	uint16_t checkSum;
+	uint32_t fsize;
+}SYS_UPDATE_INFO_T;
+#pragma pack()
+
+
+
 void BswSrv_LoadSystemInfo(void);
 void BswSrv_SystemResetRecord(void);
 int BswSrv_GetHWId(uint8_t id[]);
@@ -94,9 +106,12 @@ uint16_t BswSrv_Tool_CheckSum(uint8_t *data,uint16_t len);
 int BswSrv_Tool_isArraryEmpty(uint8_t *array,int len);
 int BswSrv_Tool_StringToBCD(unsigned char *BCD, const char *str) ;
 char *BswSrv_Tool_BCDToString(char *dest, unsigned char *BCD, int bytes) ;
+extern int BswSrv_Tool_StringToBCD(unsigned char *BCD, const char *str);
+extern char *BswSrv_Tool_BCDToString(char *dest, unsigned char *BCD, int bytes);
 
 extern SYSTEM_INFO_T	SystemInfo;
 extern GLOBAL_INFO_T	GlobalInfo;
+extern SYS_UPDATE_INFO_T updateInfo;
 
 
 #endif

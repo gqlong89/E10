@@ -50,19 +50,32 @@ void FlashReadSysInfo(void *pSysInfo, uint16_t size)
 	return;
 }
 
-
+//写入App备份程序
+void FlashWriteAppBackup(uint32_t app_backup_record_addr, uint8_t* buffer, uint16_t len)
+{
+//	FlashWrite(app_backup_record_addr,buffer,len);
+}
 
 void FlashErase(PARTITION n)
 {
     uint32_t address = flash_partition[n].s_base;
     uint32_t count = flash_partition[n].s_count;
-    
-    for(uint8_t i = 0;i<count;i++)
+    uint8_t i = 0;
+	
+    for(i = 0; i < count; i++)
     {
-        BswDrv_SysFlashErase(address+i*FLASH_PAGE_SIZE);
+        BswDrv_SysFlashErase(address + i * FLASH_PAGE_SIZE);
     }
 }
 
+//升级消息写入flash
+void WriteUpdateInfo(uint32_t fsize, uint32_t checkSum)
+{
+    updateInfo.updateFlag = 0xaa55;
+    updateInfo.fsize = fsize;
+    updateInfo.checkSum = checkSum;
+ //   FlashWrite(SysUpInfoAddr,(void *)&updateInfo,sizeof(updateInfo));
+}
 
 
 

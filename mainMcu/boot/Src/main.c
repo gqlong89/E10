@@ -25,7 +25,7 @@ void SoftDelay_ms(uint16_t mSec)
 	uint32_t	i;
 	while (mSec--)
 	{
-		for (i=0; i<3300; i++)
+		for (i = 0; i < 3300; i++)
 		{
 			__NOP();
 			__NOP();
@@ -45,17 +45,19 @@ uint8_t JumpToApplication(uint32_t Addr)
 {
 	pFunction Jump_To_Application;
 	__IO uint32_t JumpAddress; 
+	
 	/* Test if user code is programmed starting from address "ApplicationAddress" */
 	if (((*(__IO uint32_t*)Addr) & 0x2FFE0000 ) == 0x20000000)
 	{ 
-	  /* Jump to user application */
-	  JumpAddress = *(__IO uint32_t*) (Addr + 4);
-	  Jump_To_Application = (pFunction) JumpAddress; 
-	  /* Initialize user application's Stack Pointer */
-	  __set_MSP(*(__IO uint32_t*) Addr);
+		/* Jump to user application */
+		JumpAddress = *(__IO uint32_t*) (Addr + 4);
+		Jump_To_Application = (pFunction) JumpAddress; 
+		/* Initialize user application's Stack Pointer */
+		__set_MSP(*(__IO uint32_t*) Addr);
 
-	  Jump_To_Application();
+		Jump_To_Application();
 	}
+	
 	return 1;
 }
 
@@ -93,17 +95,18 @@ int main(void)
 	printf("|==============================================================|\n");
     
 	
-	BswDrv_SysFlashRead(SysUpInfoAddr,(void*)&updateInfo,sizeof(updateInfo));
-	printf("headFlag=%X upgradeFlag = %d \r\n",updateInfo.headFlag,updateInfo.fw[FW_U8].upgradeFlag);
-	if(updateInfo.headFlag == 0x55AA && updateInfo.fw[FW_U8].upgradeFlag == 1){
-		UpdateFromAppBkp(updateInfo.fw[FW_U8].startAddrs,updateInfo.fw[FW_U8].fsize,updateInfo.fw[FW_U8].checkSum);
+	BswDrv_SysFlashRead(SysUpInfoAddr,(void*)&updateInfo, sizeof(updateInfo));
+	printf("headFlag=%X upgradeFlag = %d \r\n", updateInfo.headFlag, updateInfo.fw[FW_U8].upgradeFlag);
+	if(updateInfo.headFlag == 0x55AA && updateInfo.fw[FW_U8].upgradeFlag == 1)
+	{
+		UpdateFromAppBkp(updateInfo.fw[FW_U8].startAddrs, updateInfo.fw[FW_U8].fsize, updateInfo.fw[FW_U8].checkSum);
 	}
 	
     if(((*(__IO uint32_t*)(AppFlashAddr+4))&0xFF000000)==0x08000000)//判断是否为0X08XXXXXX.
-    {	 
+    {
         printf("跳转到APP应用程序!\n");
 		SoftDelay_ms(10);
-        JumpToApplication(AppFlashAddr);//自定义的跳转函数，跳转地址为0X0000
+        JumpToApplication(AppFlashAddr);
     }
     else 
     {
@@ -118,15 +121,4 @@ int main(void)
 }
 
 
-/*****************************************************************************
-** Function name:           vApplicationTickHook
-** Descriptions:               //应用层需要用到的tick级别调用,可写在该函数中 
-** input parameters:       
-** output parameters:       None
-** Returned value:              None
-** Author:                          quqian
-*****************************************************************************/
-void vApplicationTickHook(void)
-{
- //   printf("\r\n quqian,i love you! \r\n");
-}
+

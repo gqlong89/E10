@@ -12,14 +12,6 @@
 #define LED_B_OFF()   gpio_bit_set(GPIOA,GPIO_PIN_8)
 
 
-//Ëø
-#define LOCK_HIGH()     gpio_bit_set(GPIOC,GPIO_PIN_14)
-#define LOCK_LOW()      gpio_bit_reset(GPIOC,GPIO_PIN_14)
-//ÃÅ
-#define DOOR_HIGH()     gpio_bit_set(GPIOC,GPIO_PIN_15)
-#define DOOR_LOW()      gpio_bit_reset(GPIOC,GPIO_PIN_15)
-
-
 #define READ_LVD_IN()   gpio_input_bit_get(GPIOC,GPIO_PIN_0)
 
 #define READ_TP_IN()    gpio_input_bit_get(GPIOC,GPIO_PIN_4)

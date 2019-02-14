@@ -76,8 +76,11 @@ typedef enum{
 	VOICE_NUM,
 }SC8042B_VOICE_TYPE;
 
-void BswDrv_Sc8042bSpeech(SC8042B_VOICE_TYPE cnt);
-void BswDrv_SC8042B_Init(void);
+extern void BswDrv_Sc8042bSpeech(SC8042B_VOICE_TYPE cnt);
+extern void BswDrv_SC8042B_Init(void);
+extern void OptFailNotice(int code);
+//提示操作成功及具体代码
+extern void OptSuccessNotice(int code);
 
 
 #define Sc8042bSpeech	BswDrv_Sc8042bSpeech

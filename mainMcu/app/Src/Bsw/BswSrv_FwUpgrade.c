@@ -32,6 +32,10 @@ void OTA_Start(UPGRADE_TYPE type)
 
 void OAT_Init(uint8_t upgradeFlag,uint32_t startAddrs,uint32_t fileSize,uint16_t checkSum,uint8_t fwVer)
 {
+	//¹Ì¼þ»º´æÇø²Á³ý
+    uint8_t sectorNum = fileSize / FLASH_PAGE_SIZE + 1;
+	uint8_t i = 0; 
+		
     memset(&upgradeInfo,0,sizeof(upgradeInfo));
     upgradeInfo.fsize = fileSize;
     upgradeInfo.upgradeFlag = upgradeFlag;
@@ -39,13 +43,10 @@ void OAT_Init(uint8_t upgradeFlag,uint32_t startAddrs,uint32_t fileSize,uint16_t
     upgradeInfo.fw_version = fwVer;
     upgradeInfo.startAddrs = startAddrs;
     upgradeInfo.wirteSize = 0;
-
-    //¹Ì¼þ»º´æÇø²Á³ý
-    uint8_t sectorNum = fileSize/FLASH_PAGE_SIZE +1;
     
-     for(uint8_t i = 0;i<sectorNum;i++)
+	for(i = 0; i < sectorNum; i++)
     {
-        BswDrv_SysFlashErase(flash_partition[FIRMWARE_PART].s_base+i*FLASH_PAGE_SIZE);
+        BswDrv_SysFlashErase(flash_partition[FIRMWARE_PART].s_base + i * FLASH_PAGE_SIZE);
     }
 
     GlobalInfo.upgradeFlag = 1;

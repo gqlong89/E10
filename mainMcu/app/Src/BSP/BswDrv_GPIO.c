@@ -9,8 +9,6 @@ void TIMER0_UP_IRQHandler(void)
     {
         timer_interrupt_flag_clear(TIMER0, TIMER_INT_FLAG_UP);
         
-		LOCK_LOW();
-		DOOR_LOW();
 
 		timer_interrupt_disable(TIMER0, TIMER_INT_FLAG_UP);
 		nvic_irq_disable(TIMER0_UP_IRQn);
@@ -79,12 +77,6 @@ void BswDrv_GPIO_Init (void)
 	//外部中断配置
 	BswDrv_GPIO_EXIT_init(EXTI0_IRQn,GPIO_PORT_SOURCE_GPIOC,GPIO_PIN_SOURCE_0,EXTI_0);
 	
-	/* Door门禁 */
-	gpio_init(GPIOC, GPIO_MODE_OUT_PP, GPIO_OSPEED_50MHZ, GPIO_PIN_14);	//L_OPEN
-	gpio_init(GPIOC, GPIO_MODE_OUT_PP, GPIO_OSPEED_50MHZ, GPIO_PIN_15);	//OPEN
-	gpio_init(GPIOC, GPIO_MODE_IPD,    GPIO_OSPEED_50MHZ, GPIO_PIN_1);	//CLOSE_DET
-	
-	
 	/* SC8042语音模块*/
 	gpio_init(GPIOC, GPIO_MODE_OUT_PP, GPIO_OSPEED_50MHZ, GPIO_PIN_6);	//AUDIO_EN
 	gpio_init(GPIOB, GPIO_MODE_OUT_PP, GPIO_OSPEED_50MHZ, GPIO_PIN_0);	//SC8042_RST
@@ -99,35 +91,5 @@ void BswDrv_GPIO_Init (void)
 	LED_R_OFF();
 	LED_G_OFF();
 	LED_B_OFF();
-
-	LOCK_LOW();
-	DOOR_LOW();
 }
 
-/**
- * 控制门和锁打开--200ms的脉冲
- * @flag-- 
- * 		TYPE_SYNC: 同步方式打开
- * 		TYPE_ASYNC：异步方式打开
- */
-void BswDrv_OpenDoor(DOOR_CTRL_TYPE flag)
-{
-	CL_LOG("OpenDoor ctrl.\r\n");
-	
-	LOCK_HIGH();
-	DOOR_HIGH();
-
-	if(flag == TYPE_SYNC)//同步
-	{
-		osDelay(1000);
-
-		LOCK_LOW();
-		DOOR_LOW();
-	}
-	else if(flag == TYPE_ASYNC)//异步
-	{
-		timer_interrupt_enable(TIMER0, TIMER_INT_FLAG_UP);
-		nvic_irq_enable(TIMER0_UP_IRQn, 5, 0);
-		timer_enable(TIMER0);
-	}
-}

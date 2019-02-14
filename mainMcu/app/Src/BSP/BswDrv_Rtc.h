@@ -4,12 +4,12 @@
 #include "includes.h"
 
 
-void GetRtcTime(void* pRTCTime);
-void SetRtcCount(time_t timestamp);
-time_t GetTimeStamp(void);
+extern void GetRtcTime(void* pRTCTime);
+extern void SetRtcCount(time_t timestamp);
+extern time_t GetTimeStamp(void);
 
 
-void BswDrv_RtcInit(void);
+extern void BswDrv_RtcInit(void);
 
 #endif
 

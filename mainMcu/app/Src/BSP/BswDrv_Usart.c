@@ -102,6 +102,10 @@ int UARTx_Init(uint8_t index, ControlStatus intEnable, uint32_t Baud)
     return 0;
 }
 
+void UsartFlush(int portIndex)
+{
+  //  FIFO_S_Flush(&gUartPortAddr[portIndex].rxBuffCtrl);
+}
 
 void BswDrv_UsartSend(uint8_t portIndex, uint8_t *data, uint16_t len)
 {

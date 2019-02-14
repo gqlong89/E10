@@ -33,8 +33,8 @@ void BswDrv_SoftDelay_us(uint16_t count)
 	__IO uint32_t i = 0;
 	__IO uint8_t j = 0;
 
-	for(i=0; i<count; i++) {
-	
+	for(i=0; i<count; i++) 
+	{
 		for(j=0; j<8; j++);
 	}
 }

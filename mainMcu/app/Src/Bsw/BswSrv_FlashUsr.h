@@ -20,9 +20,14 @@ typedef struct {
 
 
 
-void FlashErase(PARTITION n);
-int FlashWriteSysInfo(void *pSysInfo, uint16_t size);
-void FlashReadSysInfo(void *pSysInfo, uint16_t size);
-
+extern void FlashErase(PARTITION n);
+extern int FlashWriteSysInfo(void *pSysInfo, uint16_t size);
+extern void FlashReadSysInfo(void *pSysInfo, uint16_t size);
+extern void WriteUpdateInfo(uint32_t fsize, uint32_t checkSum);
+extern void FlashWriteAppBackup(uint32_t app_backup_record_addr, uint8_t* buffer, uint16_t len);
 
 #endif
+
+
+
+
