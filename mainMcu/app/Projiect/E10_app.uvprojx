@@ -386,16 +386,6 @@
               <FilePath>..\Src\Application\App_Main.c</FilePath>
             </File>
             <File>
-              <FileName>App_BlueProto.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Src\Application\App_BlueProto.c</FilePath>
-            </File>
-            <File>
-              <FileName>App_NetProto.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Src\Application\App_NetProto.c</FilePath>
-            </File>
-            <File>
               <FileName>App_CardBoardProto.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\Src\Application\App_CardBoardProto.c</FilePath>
@@ -415,6 +405,21 @@
               <FileType>1</FileType>
               <FilePath>..\Src\Application\App_CAN.c</FilePath>
             </File>
+            <File>
+              <FileName>blue_proto.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Src\Application\blue_proto.c</FilePath>
+            </File>
+            <File>
+              <FileName>server.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Src\Application\server.c</FilePath>
+            </File>
+            <File>
+              <FileName>proto.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Src\Application\proto.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -431,24 +436,9 @@
               <FilePath>..\Src\Bsw\BswSrv_NFCard_Task.c</FilePath>
             </File>
             <File>
-              <FileName>BswSrv_NetTask.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Src\Bsw\BswSrv_NetTask.c</FilePath>
-            </File>
-            <File>
-              <FileName>BswSrv_WifiBlueTask.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Src\Bsw\BswSrv_WifiBlueTask.c</FilePath>
-            </File>
-            <File>
               <FileName>BswSrv_FwUpgrade.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\Src\Bsw\BswSrv_FwUpgrade.c</FilePath>
-            </File>
-            <File>
-              <FileName>BswSrv_RF433.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Src\Bsw\BswSrv_RF433.c</FilePath>
             </File>
             <File>
               <FileName>BswSrv_CardBoard.c</FileName>
@@ -459,16 +449,6 @@
               <FileName>BswSrv_ConfigTool.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\Src\Bsw\BswSrv_ConfigTool.c</FilePath>
-            </File>
-            <File>
-              <FileName>BswSrv_Air720.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Src\Bsw\BswSrv_Air720.c</FilePath>
-            </File>
-            <File>
-              <FileName>BswSrv_WG215.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Src\Bsw\BswSrv_WG215.c</FilePath>
             </File>
             <File>
               <FileName>BswSrv_Key.c</FileName>
@@ -499,6 +479,11 @@
               <FileName>BswSrv_CAN.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\Src\Bsw\BswSrv_CAN.c</FilePath>
+            </File>
+            <File>
+              <FileName>bluetooth.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Src\Application\bluetooth.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -566,11 +551,6 @@
               <FilePath>..\Src\BSP\BswDrv_Debug.c</FilePath>
             </File>
             <File>
-              <FileName>BswDrv_IC_RF433.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Src\BSP\BswDrv_IC_RF433.c</FilePath>
-            </File>
-            <File>
               <FileName>BswDrv_SPI_Fm175xx.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\Src\BSP\BswDrv_SPI_Fm175xx.c</FilePath>
@@ -586,14 +566,24 @@
               <FilePath>..\Src\BSP\BswDrv_sc8042b.c</FilePath>
             </File>
             <File>
-              <FileName>BswDrv.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Src\BSP\BswDrv.c</FilePath>
-            </File>
-            <File>
               <FileName>BswDrv_CAN.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\Src\BSP\BswDrv_CAN.c</FilePath>
+            </File>
+            <File>
+              <FileName>GM510.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Src\BSP\GM510.c</FilePath>
+            </File>
+            <File>
+              <FileName>BswDrv_HC595.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Src\BSP\BswDrv_HC595.c</FilePath>
+            </File>
+            <File>
+              <FileName>tfs.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Src\BSP\tfs.c</FilePath>
             </File>
           </Files>
         </Group>
